@@ -15,7 +15,34 @@ var LineItem = React.createClass({
 });
 
 module.exports = React.createClass({
+  handleClick: function(e) {
+
+    var invoice=this.props.model;
+    var description="Invoice # " + invoice.invoiceId
+
+    this._stripeCheckout.open({
+      name: 'Emnett IO',
+      description: description,
+      amount: invoice.total
+    });
+    e.preventDefault();
+  },
+
+  handleStripeToken: function(token){
+    console.log('token', token);
+  },
+
+
   render: function() {
+    // console.debug("render. model:", this.props.model);
+
+     this._stripeCheckout = StripeCheckout.configure({
+      key: 'pk_test_6pNbSkJ1JlqCC7rhEgoz1UCe',
+      image: '/img/mcs-logo-128x128.png',
+      locale: 'auto',
+      token: this.handleStripeToken
+    });
+
     var invoice = this.props.model;
     var invoiceId = invoice.invoiceId;
     var lineItemModels = invoice.lineItems;
@@ -70,7 +97,9 @@ module.exports = React.createClass({
             </tr>
           </tfoot>
         </table>
-
+        <div>
+          <button onClick={this.handleClick}>Pay Now</button>
+        </div>
       </div>
     );
   }
